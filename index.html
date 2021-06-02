@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<title>Game Gunbow By Mon</title>
+<head>
+    <script src="js/map.js"></script>
+    <script src="js/cannon.js"></script>
+    <script src="js/ball.js"></script>
+    <script src="js/key.js"></script>
+    <script>
+
+        var GRAVITY = 0.5;
+        var canvas1;
+        var _context;
+        var _cannon;
+        var _cannon2;
+        var _map;
+        var _keypressed = [];
+        var keyStates;
+
+        const AVAILABLE_KEYS = [
+            Keys.LEFT_ARROW,
+            Keys.RIGHT_ARROW,
+            Keys.KEY_A,
+            Keys.KEY_D,
+            Keys.SPACE,
+        ];
+
+        function clear() {
+            _context.clearRect(0, 0, canvas1.width, canvas1.height);
+            let _backgroundImg=new Image()
+            _backgroundImg.src = "Background.jpg";
+            _context.drawImage(_backgroundImg, 0, 0, canvas1.width, canvas1.height);
+        }
+        function draw() {
+            clear();
+
+            let _backgroundImg = new Image();
+            _backgroundImg.src = "Background.jpg";
+            _context.drawImage(_backgroundImg, 0, 0, canvas1.width, canvas1.height);
+
+            _map.draw(_context);
+            _cannon.draw(_context);
+            _cannon2.draw(_context);
+            _context.fillStyle="red"
+            _context.fillText("cannon1-hp:"+_cannon.hp,10,20);
+            _context.fillText("cannon2-hp:"+_cannon2.hp,10,30);
+        }
+        function init() {
+            canvas1 = document.getElementById("canvas");
+            _context = canvas1.getContext("2d");
+
+            _map = new Map(canvas1.width, canvas1.height);
+            _cannon = new Cannon(canvas1.width, canvas1.height, 30, 30);
+            _cannon2 = new Cannon(canvas1.width, canvas1.height, 750, 20);
+            draw();
+        }
+
+        function checkwin(){
+
+        }
+        function update() {
+            _cannon.update(_map);
+            _cannon2.update(_map);
+            draw();
+        }
+        function canvas_mousemove(e) {
+            var x = e.pageX - canvas1.offsetLeft;
+            var y = e.pageY - canvas1.offsetTop;
+            _cannon.rotate(x, y);
+            _cannon2.rotate(x, y);
+        }
+        function canvas_mousedown(e) {
+            var x = e.pageX - canvas1.offsetLeft;
+            var y = e.pageY - canvas1.offsetTop;
+            _cannon.fire(x, y);
+        }
+        function canvas_keyDown(e) {
+            e.preventDefault();
+            if (AVAILABLE_KEYS.indexOf(e.keyCode) != -1) {
+                _keypressed[e.keyCode] = true;
+                doKeypress();
+            }
+        }
+        function canvas_keyUp(e) {
+            e.preventDefault();
+            if (_keypressed[e.keyCode]) {
+                _keypressed[e.keyCode] = false;
+                _cannon.resetSpeed();
+            }
+        }
+        function doKeypress() {
+            if (_keypressed[Keys.LEFT_ARROW]) _cannon2.moveLeft();
+            if (_keypressed[Keys.RIGHT_ARROW]) _cannon2.moveRight();
+            if (_keypressed[Keys.KEY_D]) _cannon.moveRight();
+            if (_keypressed[Keys.KEY_A]) _cannon.moveRight();
+            _cannon.move();
+            if (_keypressed[Keys.SPACE]){
+                var x = e.pageX - canvas1.offsetLeft;
+                var y = e.pageY - canvas1.offsetTop;
+                _cannon2.fire(x,y)
+            }
+
+            draw();
+        }
+        // onload
+        window.onload = function () {
+            init();
+            canvas1.onmousemove = canvas_mousemove;
+            canvas1.onmousedown = canvas_mousedown;
+            canvas1.onkeydown = canvas_keyDown;
+            canvas1.onkeyup = canvas_keyUp;
+            window.setInterval(update, 1000 / 20);
+        }
+    </script>
+</head>
+<body>
+<h1 style="color:red;text-align: center">Gunbow By Mon</h1>
+<p>Clich chuot de ban, Luu y: Cang di chuot ra xa khau sung thi luc ban cang manh</p>
+<center>
+    <canvas id="canvas" tabindex="1" width="1000px" height="600px" style="border: 1px solid"></canvas>
+</center>
+</body>
+</html>
